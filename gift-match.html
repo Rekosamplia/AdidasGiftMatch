@@ -41,6 +41,12 @@
   .opt:active { transform: scale(.98); }
   .opt.is-picked { background: #0c0c0c; color: #fff; border-color: #0c0c0c; }
   .opt.is-picked .opt-icon { color: #fff; }
+  /* Cards de opción en rejilla: negras con icono y texto blanco; al elegir se invierten */
+  .opt-dark { background: #0c0c0c; color: #fff; border-color: #0c0c0c; }
+  .opt-dark .opt-icon { color: #fff; }
+  .opt-dark:hover { transform: translateY(-2px); box-shadow: 0 16px 30px -16px rgba(0,0,0,.65); }
+  .opt-dark.is-picked { background: #fff; color: #0c0c0c; border-color: #0c0c0c; box-shadow: inset 0 0 0 2px #0c0c0c; }
+  .opt-dark.is-picked .opt-icon { color: #0c0c0c; }
   .grain::after {
     content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .18; mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -228,8 +234,8 @@
     star:   '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
     bolt:   '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
   };
-  const svg = (k, cls = 'w-7 h-7') =>
-    `<svg viewBox="0 0 24 24" class="${cls}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[k]}</svg>`;
+  const svg = (k, cls = 'w-7 h-7', sw = 1.7) =>
+    `<svg viewBox="0 0 24 24" class="${cls}" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[k]}</svg>`;
 
   /* ───────── Profiles ───────── */
   const PROFILES = {
@@ -323,9 +329,9 @@
             <span class="text-[21px] font-bold tracking-tight">${t(o.label)}</span>
           </button>`;
       }
-      return `<button type="button" data-i="${i}" class="opt${sel} aspect-square rounded-[22px] border border-line bg-white/60 flex flex-col items-start justify-between p-5 text-left">
-          <span class="opt-icon text-ink">${svg(o.icon, 'w-10 h-10')}</span>
-          <span class="text-[17px] leading-tight font-bold tracking-tight">${t(o.label)}</span>
+      return `<button type="button" data-i="${i}" class="opt opt-dark${sel} aspect-square rounded-[22px] border flex flex-col items-start justify-between p-5 text-left">
+          <span class="opt-icon">${svg(o.icon, 'w-[68px] h-[68px] -ml-1 -mt-1', 1.4)}</span>
+          <span class="text-[18px] leading-tight font-extrabold tracking-tight">${t(o.label)}</span>
         </button>`;
     }).join('');
 
