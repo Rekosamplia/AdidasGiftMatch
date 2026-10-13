@@ -184,7 +184,7 @@
   <article class="relative rounded-[22px] bg-ink text-white aspect-[3/4] flex flex-col">
     <div class="absolute inset-0 overflow-hidden rounded-[22px] grain">
       <div data-bg class="absolute inset-0"></div>
-      <img data-photo alt="" class="absolute inset-0 w-full h-full object-cover object-[60%_30%]" onerror="this.remove()">
+      <img data-photo alt="" class="absolute inset-0 w-full h-full object-cover" onerror="this.remove()">
       <svg data-glyph viewBox="0 0 24 24" class="absolute -right-6 top-1/4 w-3/4 text-white/[.09]" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"></svg>
       <div class="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/85"></div>
     </div>
@@ -222,18 +222,18 @@
 
   /* ───────── Profiles ───────── */
   const PROFILES = {
-    runner:   { title: ['The', 'Runner'],        icon: 'run',     tagline: 'Para quien siempre tiene un nuevo objetivo por delante.',               tags: ['Running · Performance', 'Accesorios'],   bg: 'radial-gradient(120% 80% at 80% 10%, #6b3b2a 0%, #241713 55%, #0c0c0c 100%)',
+    runner:   { title: ['The', 'Runner'],        icon: 'run',     tagline: 'Para quien siempre tiene un nuevo objetivo por delante.',               tags: ['Running · Performance', 'Accesorios'],   photo: 'imgs/runner.jpg', photoPos: '50% 50%', bg: 'radial-gradient(120% 80% at 80% 10%, #6b3b2a 0%, #241713 55%, #0c0c0c 100%)',
                 ideas: ['Zapatillas de running con amortiguación', 'Camiseta técnica transpirable', 'Gorra y calcetines de running'], shop: 'https://www.adidas.es/running' },
-    trainer:  { title: ['The', 'Trainer'],       icon: 'gym',     tagline: 'Si entrenar forma parte de su día a día.',                              tags: ['Training · Fitness', 'Funcional'],       photo: 'imgs/trainer.jpg', bg: 'radial-gradient(120% 80% at 20% 10%, #5a4a3a 0%, #1d1915 55%, #0c0c0c 100%)',
+    trainer:  { title: ['The', 'Trainer'],       icon: 'gym',     tagline: 'Si entrenar forma parte de su día a día.',                              tags: ['Training · Fitness', 'Funcional'],       photo: 'imgs/trainer.jpg', photoPos: '60% 30%', bg: 'radial-gradient(120% 80% at 20% 10%, #5a4a3a 0%, #1d1915 55%, #0c0c0c 100%)',
                 ideas: ['Mallas y top de entrenamiento', 'Zapatillas de training versátiles', 'Bolsa de deporte'], shop: 'https://www.adidas.es/training' },
-    sneaker:  { title: ['The', 'Sneaker Lover'], icon: 'sneaker', tagline: 'Hay regalos que se abren y otros que se estrenan.',                     tags: ['Sneakers · Lifestyle', 'Originals'],     bg: 'radial-gradient(120% 80% at 70% 20%, #7a6a55 0%, #2a241d 55%, #0c0c0c 100%)',
+    sneaker:  { title: ['The', 'Sneaker Lover'], icon: 'sneaker', tagline: 'Hay regalos que se abren y otros que se estrenan.',                     tags: ['Sneakers · Lifestyle', 'Originals'],     photo: 'imgs/sneaker.jpg', photoPos: '52% 50%', bg: 'radial-gradient(120% 80% at 70% 20%, #7a6a55 0%, #2a241d 55%, #0c0c0c 100%)',
                 ideas: ['Un clásico Originals: Samba, Gazelle o Superstar', 'Edición especial o colaboración', 'Calcetines Originals a juego'], shop: 'https://www.adidas.es/originals' },
-    style:    { title: ['Style', 'Seeker'],      icon: 'shirt',   tagline: 'Su regalo ideal encaja con su estilo y su día a día.',                  tags: ['Lifestyle', 'Apparel · Streetwear'],     bg: 'radial-gradient(120% 80% at 30% 15%, #6e4f3c 0%, #261b15 55%, #0c0c0c 100%)',
+    style:    { title: ['Style', 'Seeker'],      icon: 'shirt',   tagline: 'Su regalo ideal encaja con su estilo y su día a día.',                  tags: ['Lifestyle', 'Apparel · Streetwear'],     photo: 'imgs/style.jpg', photoPos: '50% 50%', titleBottom: true, bg: 'radial-gradient(120% 80% at 30% 15%, #6e4f3c 0%, #261b15 55%, #0c0c0c 100%)',
                 ideas: ['Sudadera o chaqueta Adicolor', 'Pantalón de chándal de tres bandas', 'Mochila o bolso urbano'], shop: 'https://www.adidas.es/lifestyle' },
-    football: { title: ['The', 'Football Fan'],  icon: 'ball',    tagline: 'Si el fútbol forma parte de su vida, su regalo también debería hacerlo.', tags: ['Fútbol', 'Camisetas · Accesorios'],   bg: 'radial-gradient(120% 80% at 75% 15%, #3f4a3a 0%, #171c16 55%, #0c0c0c 100%)',
+    football: { title: ['The', 'Football Fan'],  icon: 'ball',    tagline: 'Si el fútbol forma parte de su vida, su regalo también debería hacerlo.', tags: ['Fútbol', 'Camisetas · Accesorios'],   photo: 'imgs/football.jpg', photoPos: '50% 62%', bg: 'radial-gradient(120% 80% at 75% 15%, #3f4a3a 0%, #171c16 55%, #0c0c0c 100%)',
                 ideas: ['Camiseta oficial de su equipo', 'Balón oficial de competición', 'Botas de fútbol'], shop: 'https://www.adidas.es/futbol' },
-    easy:     { title: ['The', 'Easy Gift'],     icon: 'cap',     tagline: 'A veces el mejor regalo es el que sabes que va a usar.',                tags: ['Accesorios · Básicos', 'Regalos'],       bg: 'radial-gradient(120% 80% at 60% 10%, #8a6a4a 0%, #2c2118 55%, #0c0c0c 100%)',
-                ideas: ['Gorra o gorro de tres bandas', 'Botella o mochila adidas', 'Tarjeta regalo adidas'], shop: 'https://www.adidas.es/accesorios' },
+    easy:     { title: ['The', 'Easy Gift'],     icon: 'cap',     tagline: 'A veces el mejor regalo es el que sabes que va a usar.',                tags: ['Accesorios · Básicos', 'Regalos'],       photo: 'imgs/easy.jpg', photoPos: '100% 50%', bg: 'radial-gradient(120% 80% at 60% 10%, #8a6a4a 0%, #2c2118 55%, #0c0c0c 100%)',
+                ideas: ['Una fragancia adidas', 'Gorra, botella o mochila de tres bandas', 'Tarjeta regalo adidas'], shop: 'https://www.adidas.es/accesorios' },
   };
   const ORDER = ['runner', 'trainer', 'sneaker', 'style', 'football', 'easy'];
 
@@ -363,11 +363,21 @@
     node.querySelector('[data-bg]').style.background = P.bg;
     // Foto opcional por perfil: añade `photo: 'imgs/<id>.jpg'` en PROFILES.
     const photo = node.querySelector('[data-photo]');
-    if (P.photo) { photo.src = P.photo; node.querySelector('[data-glyph]').remove(); }
+    if (P.photo) {
+      photo.src = P.photo;
+      photo.style.objectPosition = P.photoPos || 'center';
+      node.querySelector('[data-glyph]').remove();
+      // Refuerzo de contraste para que el texto se lea sobre fotos claras.
+      const shade = document.createElement('div');
+      shade.className = 'absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent ' + (P.titleBottom ? 'h-[72%]' : 'h-[62%]');
+      photo.parentNode.appendChild(shade);
+    }
     else photo.remove();
     const glyph = node.querySelector('[data-glyph]'); if (glyph) glyph.innerHTML = I[P.icon];
     const title = node.querySelector('[data-title]');
     title.innerHTML = P.title.join('<br>');
+    // Título abajo cuando la foto tiene la cara en la parte superior.
+    if (P.titleBottom) { title.classList.add('mb-3'); node.querySelector('[data-tagline]').before(title); }
     const tagline = node.querySelector('[data-tagline]');
     tagline.textContent = P.tagline;
     const tags = node.querySelector('[data-tags]');
