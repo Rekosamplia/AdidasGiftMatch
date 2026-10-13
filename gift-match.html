@@ -50,6 +50,12 @@
   .stagger > *:nth-child(3) { animation-delay: .12s; }
   .stagger > *:nth-child(4) { animation-delay: .18s; }
   .stagger > *:nth-child(5) { animation-delay: .24s; }
+  .logo-bar { transform-box: fill-box; transform-origin: 50% 100%; animation: logoBar 1.5s cubic-bezier(.6,0,.25,1) infinite; }
+  @keyframes logoBar {
+    0%        { transform: scaleY(.12); opacity: .2; }
+    40%, 72%  { transform: scaleY(1);   opacity: 1; }
+    100%      { transform: scaleY(.12); opacity: .2; }
+  }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
 </head>
@@ -107,11 +113,12 @@
 
   <!-- ─── LOADING ─── -->
   <section id="screen-loading" class="screen flex-1 flex flex-col items-center justify-center bg-ink text-white px-8 grain relative" hidden>
-    <div class="flex items-end gap-2 h-16">
-      <span class="w-4 h-8  bg-white origin-bottom animate-stripe -skew-x-[30deg]"></span>
-      <span class="w-4 h-12 bg-white origin-bottom animate-stripe -skew-x-[30deg]" style="animation-delay:.15s"></span>
-      <span class="w-4 h-16 bg-white origin-bottom animate-stripe -skew-x-[30deg]" style="animation-delay:.3s"></span>
-    </div>
+    <!-- Preloader: las 3 barras del logo adidas crecen desde la base, una tras otra -->
+    <svg viewBox="100 100 50 32" class="w-28 overflow-visible" role="img" aria-label="Cargando">
+      <path class="logo-bar" style="animation-delay:0s"   fill="#fff" d="M109.718 121.401l5.791 10.038h-12.958L100 127.007l9.718-5.606z"/>
+      <path class="logo-bar" style="animation-delay:.18s" fill="#fff" d="M132.781 131.439l-11.984-20.747-9.719 5.606 8.745 15.141h12.958z"/>
+      <path class="logo-bar" style="animation-delay:.36s" fill="#fff" d="M150.07 131.439L131.925 100l-9.719 5.606 14.906 25.833h12.958z"/>
+    </svg>
     <p class="mt-8 font-display text-[36px] uppercase tracking-wide">Buscando el match…</p>
     <p class="mt-2 text-white/60 text-[15px]">Cruzando gustos, planes y estilo</p>
   </section>
@@ -119,6 +126,10 @@
   <!-- ─── RESULT ─── -->
   <section id="screen-result" class="screen flex-1 overflow-y-auto" hidden>
     <div class="px-6 pt-2 pb-10">
+      <button id="btnBackProfiles" type="button" class="hidden items-center gap-2 mb-4 -ml-1 h-10 pl-2 pr-4 rounded-full bg-black/[.06] text-[14px] font-extrabold hover:bg-black/10 transition">
+        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+        Todos los perfiles
+      </button>
       <p id="resultEyebrow" class="text-[13px] font-bold uppercase tracking-[.18em] text-black/45 animate-rise">Su Gift Match es</p>
       <div id="resultCard" class="mt-4"></div>
 
@@ -226,7 +237,7 @@
                 ideas: ['Zapatillas de running con amortiguación', 'Camiseta técnica transpirable', 'Gorra y calcetines de running'], shop: 'https://www.adidas.es/running' },
     trainer:  { title: ['The', 'Trainer'],       icon: 'gym',     tagline: 'Si entrenar forma parte de su día a día.',                              tags: ['Training · Fitness', 'Funcional'],       photo: 'imgs/trainer.jpg', photoPos: '60% 30%', bg: 'radial-gradient(120% 80% at 20% 10%, #5a4a3a 0%, #1d1915 55%, #0c0c0c 100%)',
                 ideas: ['Mallas y top de entrenamiento', 'Zapatillas de training versátiles', 'Bolsa de deporte'], shop: 'https://www.adidas.es/training' },
-    sneaker:  { title: ['The', 'Sneaker Lover'], icon: 'sneaker', tagline: 'Hay regalos que se abren y otros que se estrenan.',                     tags: ['Sneakers · Lifestyle', 'Originals'],     photo: 'imgs/sneaker.jpg', photoPos: '52% 50%', bg: 'radial-gradient(120% 80% at 70% 20%, #7a6a55 0%, #2a241d 55%, #0c0c0c 100%)',
+    sneaker:  { title: ['The', 'Sneaker Lover'], icon: 'sneaker', tagline: 'Hay regalos que se abren y otros que se estrenan.',                     tags: ['Sneakers · Lifestyle', 'Originals'],     photo: 'imgs/sneaker.jpg', photoPos: '50% 56%', light: '#eaeeee', bg: 'radial-gradient(120% 80% at 70% 20%, #7a6a55 0%, #2a241d 55%, #0c0c0c 100%)',
                 ideas: ['Un clásico Originals: Samba, Gazelle o Superstar', 'Edición especial o colaboración', 'Calcetines Originals a juego'], shop: 'https://www.adidas.es/originals' },
     style:    { title: ['Style', 'Seeker'],      icon: 'shirt',   tagline: 'Su regalo ideal encaja con su estilo y su día a día.',                  tags: ['Lifestyle', 'Apparel · Streetwear'],     photo: 'imgs/style.jpg', photoPos: '50% 50%', titleBottom: true, bg: 'radial-gradient(120% 80% at 30% 15%, #6e4f3c 0%, #261b15 55%, #0c0c0c 100%)',
                 ideas: ['Sudadera o chaqueta Adicolor', 'Pantalón de chándal de tres bandas', 'Mochila o bolso urbano'], shop: 'https://www.adidas.es/lifestyle' },
@@ -276,7 +287,9 @@
   let step = 0;
   let answers = [];
   let current = 'home';
-  let resultId = null;
+  let matchId = null;      // resultado del juego
+  let resultMode = 'match'; // 'match' (resultado) | 'profile' (detalle desde perfiles)
+  let lastProfile = null;
 
   const $ = (s) => document.querySelector(s);
   const forMe = () => answers[0] === 0;
@@ -351,9 +364,9 @@
   }
 
   function finish() {
-    resultId = computeResult();
+    matchId = computeResult();
     show('loading');
-    setTimeout(() => { renderResult(); show('result'); }, 1600);
+    setTimeout(() => { renderResult(matchId, 'match'); show('result'); }, 1600);
   }
 
   /* ───────── Cards ───────── */
@@ -371,6 +384,16 @@
       const shade = document.createElement('div');
       shade.className = 'absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent ' + (P.titleBottom ? 'h-[72%]' : 'h-[62%]');
       photo.parentNode.appendChild(shade);
+      // Variante clara para fotos de producto sobre fondo claro: zapatilla entera y texto oscuro.
+      if (P.light) {
+        node.querySelector('[data-bg]').style.background = P.light;
+        photo.style.objectFit = 'contain';
+        shade.remove();
+        node.querySelector('.bg-gradient-to-b').remove();
+        node.classList.remove('bg-ink', 'text-white');
+        node.classList.add('text-ink');
+        node.querySelector('[data-tagline]').classList.replace('text-white/90', 'text-ink/80');
+      }
     }
     else photo.remove();
     const glyph = node.querySelector('[data-glyph]'); if (glyph) glyph.innerHTML = I[P.icon];
@@ -382,7 +405,7 @@
     tagline.textContent = P.tagline;
     const tags = node.querySelector('[data-tags]');
     tags.innerHTML = P.tags.map((x) =>
-      `<span class="bg-white text-ink rounded-lg font-extrabold uppercase tracking-wide ${size === 'lg' ? 'text-[11px] px-3 py-2' : 'text-[8.5px] px-2 py-1.5'}">${x}</span>`).join('');
+      `<span class="${P.light ? 'bg-ink text-white' : 'bg-white text-ink'} rounded-lg font-extrabold uppercase tracking-wide ${size === 'lg' ? 'text-[11px] px-3 py-2' : 'text-[8.5px] px-2 py-1.5'}">${x}</span>`).join('');
     if (size === 'lg') {
       node.classList.add('p-6', 'animate-pop');
       title.classList.add('text-[clamp(44px,15vw,64px)]');
@@ -391,21 +414,29 @@
       node.classList.add('p-3.5');
       title.classList.add('text-[clamp(20px,6.5vw,28px)]');
       tagline.classList.add('text-[11.5px]', 'mb-2.5');
+      // En miniatura la zapatilla ocupa el centro: sin frase para no taparla.
+      if (P.light) tagline.remove();
     }
     return node;
   }
 
-  function renderResult() {
-    const P = PROFILES[resultId];
-    $('#resultEyebrow').textContent = forMe() ? 'Tu Gift Match es' : 'Su Gift Match es';
-    $('#resultCard').replaceChildren(buildCard(resultId, 'lg'));
+  function renderResult(id, mode) {
+    const P = PROFILES[id];
+    const isProfile = mode === 'profile';
+    resultMode = mode;
+    $('#btnBackProfiles').classList.toggle('hidden', !isProfile);
+    $('#btnBackProfiles').classList.toggle('inline-flex', isProfile);
+    $('#resultEyebrow').textContent = isProfile ? 'Perfil de regalo' : forMe() ? 'Tu Gift Match es' : 'Su Gift Match es';
+    $('#btnRetry').textContent = isProfile ? 'Jugar' : 'Volver a jugar';
+    $('#resultCard').replaceChildren(buildCard(id, 'lg'));
     $('#resultIdeas').innerHTML = P.ideas.map((x, i) =>
       `<li class="flex items-center gap-4 py-3.5"><span class="font-display text-[22px] w-6 text-black/30">0${i + 1}</span><span class="text-[16px] font-semibold">${t(x)}</span></li>`).join('');
     $('#resultShop').href = P.shop;
 
     const name = P.title.join(' ').toUpperCase();
     const url = location.href.split('#')[0];
-    const msg = `${forMe() ? 'Mi' : 'Su'} adidas GIFT MATCH es ${name} 🎁\n“${P.tagline}”\n\nIdeas: ${P.ideas.join(', ')}.\n\nDescubre el tuyo: ${url}`;
+    const lead = isProfile ? 'Un regalo adidas GIFT MATCH:' : `${forMe() ? 'Mi' : 'Su'} adidas GIFT MATCH es`;
+    const msg = `${lead} ${name} 🎁\n“${P.tagline}”\n\nIdeas: ${P.ideas.join(', ')}.\n\nDescubre el tuyo: ${url}`;
     $('#btnWhatsapp').href = 'https://wa.me/?text=' + encodeURIComponent(msg);
     $('#emailForm').dataset.subject = `Tu adidas GIFT MATCH: ${name}`;
     $('#emailForm').dataset.body = msg;
@@ -414,7 +445,34 @@
 
   function renderProfiles() {
     const grid = $('#profilesGrid');
-    grid.replaceChildren(...ORDER.map((id) => buildCard(id, 'sm')));
+    grid.replaceChildren(...ORDER.map((id) => {
+      const card = buildCard(id, 'sm');
+      card.dataset.id = id;
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-label', 'Ver perfil ' + PROFILES[id].title.join(' '));
+      card.classList.add('cursor-pointer', 'transition', 'duration-200', 'hover:-translate-y-1', 'hover:shadow-[0_18px_30px_-16px_rgba(0,0,0,.55)]', 'active:scale-[.98]', 'focus:outline-none', 'focus-visible:ring-4', 'focus-visible:ring-ink/30');
+      card.insertAdjacentHTML('beforeend',
+        `<span data-arrow class="absolute top-1.5 right-1.5 w-5 h-5 rounded-full ${PROFILES[id].light ? 'bg-ink text-white' : 'bg-white text-ink'} grid place-items-center shadow" aria-hidden="true">
+           <svg viewBox="0 0 24 24" class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+         </span>`);
+      const open = () => openProfile(id);
+      card.addEventListener('click', open);
+      card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+      return card;
+    }));
+  }
+
+  function openProfile(id) {
+    lastProfile = id;
+    renderResult(id, 'profile');
+    show('result');
+  }
+
+  function backToProfiles() {
+    show('profiles');
+    const card = lastProfile && document.querySelector(`#profilesGrid [data-id="${lastProfile}"]`);
+    if (card) { card.scrollIntoView({ block: 'center' }); card.focus({ preventScroll: true }); }
   }
 
   /* ───────── Email ───────── */
@@ -445,11 +503,21 @@
   $('#btnPlayFromProfiles').addEventListener('click', start);
   $('#btnHome').addEventListener('click', () => show('home'));
   $('#btnProfiles').addEventListener('click', () => { profilesFrom = 'home'; renderProfiles(); show('profiles'); });
-  $('#btnAll').addEventListener('click', () => { profilesFrom = 'result'; renderProfiles(); show('profiles'); });
+  $('#btnAll').addEventListener('click', () => {
+    if (resultMode === 'profile') return backToProfiles();
+    profilesFrom = 'result'; renderProfiles(); show('profiles');
+  });
+  $('#btnBackProfiles').addEventListener('click', backToProfiles);
   $('#btnBack').addEventListener('click', () => {
     if (current === 'quiz') { if (step > 0) { step--; renderQuestion(); } else show('home'); }
-    else if (current === 'result') { step = QUESTIONS.length - 1; renderQuestion(); show('quiz'); }
-    else if (current === 'profiles') show(profilesFrom);
+    else if (current === 'result') {
+      if (resultMode === 'profile') backToProfiles();
+      else { step = QUESTIONS.length - 1; renderQuestion(); show('quiz'); }
+    }
+    else if (current === 'profiles') {
+      if (profilesFrom === 'result' && matchId) { renderResult(matchId, 'match'); show('result'); }
+      else show('home');
+    }
   });
 })();
 </script>
