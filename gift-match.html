@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>adidas · The Gift Match</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='100 100 50 32'%3E%3Cpath fill-rule='evenodd' d='M150.07 131.439L131.925 100l-9.719 5.606 14.906 25.833h12.958zm-17.289 0l-11.984-20.747-9.719 5.606 8.745 15.141h12.958zm-23.063-10.038l5.791 10.038h-12.958L100 127.007l9.718-5.606z'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['"Barlow Condensed"', 'Impact', 'sans-serif'],
+          sans: ['Manrope', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        },
+        colors: { ink: '#0c0c0c', paper: '#f5f4f1', line: '#dcdad5', warm: '#c8a77a' },
+        keyframes: {
+          rise: { '0%': { opacity: 0, transform: 'translateY(18px)' }, '100%': { opacity: 1, transform: 'none' } },
+          pop: { '0%': { opacity: 0, transform: 'scale(.92) rotate(-2deg)' }, '60%': { opacity: 1, transform: 'scale(1.02) rotate(.5deg)' }, '100%': { transform: 'none' } },
+          stripe: { '0%,100%': { transform: 'scaleY(.35)' }, '50%': { transform: 'scaleY(1)' } },
+        },
+        animation: {
+          rise: 'rise .5s cubic-bezier(.2,.8,.2,1) both',
+          pop: 'pop .7s cubic-bezier(.2,.8,.2,1) both',
+          stripe: 'stripe .9s ease-in-out infinite',
+        },
+      },
+    },
+  };
+</script>
+<style>
+  html, body { background: #e9e7e2; }
+  body { -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+  .screen[hidden] { display: none !important; }
+  .opt { transition: transform .18s ease, background-color .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease; }
+  .opt:hover { border-color: #0c0c0c; box-shadow: 0 10px 24px -16px rgba(0,0,0,.45); }
+  .opt:active { transform: scale(.98); }
+  .opt.is-picked { background: #0c0c0c; color: #fff; border-color: #0c0c0c; }
+  .opt.is-picked .opt-icon { color: #fff; }
+  .grain::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .18; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .stagger > * { animation: rise .5s cubic-bezier(.2,.8,.2,1) both; }
+  .stagger > *:nth-child(2) { animation-delay: .06s; }
+  .stagger > *:nth-child(3) { animation-delay: .12s; }
+  .stagger > *:nth-child(4) { animation-delay: .18s; }
+  .stagger > *:nth-child(5) { animation-delay: .24s; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body class="font-sans text-ink min-h-[100dvh] lg:flex lg:items-center lg:justify-center lg:gap-16 lg:p-10">
+
+<!-- ═════════ APP ═════════ -->
+<div id="app" class="relative mx-auto w-full max-w-[440px] min-h-[100dvh] lg:min-h-[860px] lg:h-[860px] bg-paper flex flex-col overflow-hidden lg:rounded-[36px] lg:shadow-[0_40px_80px_-30px_rgba(0,0,0,.45)] lg:ring-1 lg:ring-black/5">
+
+  <!-- Top bar -->
+  <header class="relative z-20 flex items-center justify-between px-5 h-16 shrink-0 bg-paper">
+    <button id="btnBack" type="button" aria-label="Volver" class="w-10 h-10 -ml-2 grid place-items-center rounded-full hover:bg-black/5 transition invisible">
+      <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <svg viewBox="100 100 50 32" class="h-7" role="img" aria-label="adidas"><path fill="#000" fill-rule="evenodd" d="M150.07 131.439L131.925 100l-9.719 5.606 14.906 25.833h12.958zm-17.289 0l-11.984-20.747-9.719 5.606 8.745 15.141h12.958zm-23.063-10.038l5.791 10.038h-12.958L100 127.007l9.718-5.606z"/></svg>
+    <button id="btnHome" type="button" aria-label="Volver al inicio" class="w-10 h-10 -mr-2 grid place-items-center rounded-full hover:bg-black/5 transition text-black/50">
+      <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5z"/></svg>
+    </button>
+  </header>
+
+  <!-- ─── HOME ─── -->
+  <section id="screen-home" class="screen flex-1 flex flex-col">
+    <div class="relative grain bg-ink text-white px-8 pt-12 pb-12 overflow-hidden">
+      <div class="absolute -right-24 -bottom-24 w-72 h-72 rounded-full bg-warm/20 blur-3xl"></div>
+      <svg viewBox="100 100 50 32" class="relative w-24 mx-auto animate-rise" aria-label="adidas"><path fill="#fff" fill-rule="evenodd" d="M150.07 131.439L131.925 100l-9.719 5.606 14.906 25.833h12.958zm-17.289 0l-11.984-20.747-9.719 5.606 8.745 15.141h12.958zm-23.063-10.038l5.791 10.038h-12.958L100 127.007l9.718-5.606z"/></svg>
+      <h1 class="relative mt-8 font-display font-extrabold uppercase leading-[.82] tracking-tight text-[88px] animate-rise" style="animation-delay:.08s">
+        The<br>Gift Match
+      </h1>
+    </div>
+
+    <div class="flex-1 flex flex-col px-6 pt-9 pb-8 stagger">
+      <p class="text-[13px] font-bold uppercase tracking-[.18em] text-black/45">Regalos adidas · 1 minuto</p>
+      <h2 class="mt-3 text-[32px] leading-[1.08] font-extrabold tracking-tight">¿Quieres descubrir tu <span class="font-display text-[40px] uppercase tracking-normal">Gift Match</span>?</h2>
+      <p class="mt-4 text-[16px] leading-relaxed text-black/60">Responde 5 preguntas rápidas y te diremos qué regalo encaja mejor con esa persona.</p>
+      <div class="mt-auto pt-8 space-y-3">
+        <button id="btnStart" type="button" class="w-full h-16 rounded-2xl bg-ink text-white font-extrabold text-[18px] flex items-center justify-between px-6 hover:bg-black active:scale-[.99] transition group">
+          <span>Sí, quiero jugar</span>
+          <svg viewBox="0 0 24 24" class="w-6 h-6 transition group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <button id="btnProfiles" type="button" class="w-full h-12 rounded-2xl text-[15px] font-bold text-black/60 hover:text-ink transition">Ver todos los perfiles</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── QUIZ ─── -->
+  <section id="screen-quiz" class="screen flex-1 flex flex-col" hidden>
+    <div class="px-6 pt-2">
+      <div class="flex items-center justify-between text-[13px] font-bold">
+        <span class="font-display text-[22px] uppercase tracking-wide">The Gift Match</span>
+        <span id="stepLabel" class="tabular-nums text-black/50">1/5</span>
+      </div>
+      <div class="mt-3 grid grid-cols-5 gap-1.5" id="progress"></div>
+    </div>
+    <div id="questionWrap" class="flex-1 flex flex-col px-6 pt-8 pb-8"></div>
+  </section>
+
+  <!-- ─── LOADING ─── -->
+  <section id="screen-loading" class="screen flex-1 flex flex-col items-center justify-center bg-ink text-white px-8 grain relative" hidden>
+    <div class="flex items-end gap-2 h-16">
+      <span class="w-4 h-8  bg-white origin-bottom animate-stripe -skew-x-[30deg]"></span>
+      <span class="w-4 h-12 bg-white origin-bottom animate-stripe -skew-x-[30deg]" style="animation-delay:.15s"></span>
+      <span class="w-4 h-16 bg-white origin-bottom animate-stripe -skew-x-[30deg]" style="animation-delay:.3s"></span>
+    </div>
+    <p class="mt-8 font-display text-[36px] uppercase tracking-wide">Buscando el match…</p>
+    <p class="mt-2 text-white/60 text-[15px]">Cruzando gustos, planes y estilo</p>
+  </section>
+
+  <!-- ─── RESULT ─── -->
+  <section id="screen-result" class="screen flex-1 overflow-y-auto" hidden>
+    <div class="px-6 pt-2 pb-10">
+      <p id="resultEyebrow" class="text-[13px] font-bold uppercase tracking-[.18em] text-black/45 animate-rise">Su Gift Match es</p>
+      <div id="resultCard" class="mt-4"></div>
+
+      <div class="mt-7 animate-rise" style="animation-delay:.35s">
+        <h3 class="text-[13px] font-bold uppercase tracking-[.18em] text-black/45">Ideas de regalo</h3>
+        <ul id="resultIdeas" class="mt-3 divide-y divide-line border-y border-line"></ul>
+        <a id="resultShop" href="#" target="_blank" rel="noopener" class="mt-4 inline-flex items-center gap-2 text-[15px] font-extrabold underline underline-offset-4 decoration-2">Ver selección en adidas.es
+          <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </a>
+      </div>
+
+      <!-- Share -->
+      <div class="mt-8 rounded-3xl bg-white border border-line p-5 animate-rise" style="animation-delay:.45s">
+        <h3 class="text-[20px] font-extrabold tracking-tight">Comparte tu resultado</h3>
+        <p class="mt-1 text-[14px] text-black/55">Guárdalo para ti o pásale la pista a quien quieras.</p>
+
+        <a id="btnWhatsapp" href="#" target="_blank" rel="noopener" class="mt-4 w-full h-14 rounded-2xl bg-[#25D366] text-ink font-extrabold text-[16px] flex items-center justify-center gap-3 hover:brightness-95 active:scale-[.99] transition">
+          <svg viewBox="0 0 24 24" class="w-6 h-6" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.4-.5c.2-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 21.8h0c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4c-1-1.6-1.5-3.3-1.5-5.2 0-5.4 4.4-9.8 9.8-9.8 2.6 0 5.1 1 6.9 2.9 1.8 1.8 2.9 4.3 2.9 6.9 0 5.4-4.4 9.8-9.8 9.8zM20.3 3.7C18.1 1.5 15.1.2 12 .2 5.5.2.2 5.5.2 12c0 2.1.5 4.1 1.6 5.9L.1 24l6.3-1.7c1.7.9 3.7 1.4 5.6 1.4 6.5 0 11.8-5.3 11.8-11.8 0-3.1-1.2-6.1-3.5-8.2z"/></svg>
+          Enviar por WhatsApp
+        </a>
+
+        <form id="emailForm" class="mt-3" novalidate>
+          <label for="emailInput" class="sr-only">Email</label>
+          <div class="flex gap-2">
+            <input id="emailInput" type="email" inputmode="email" autocomplete="email" placeholder="tu@email.com" class="min-w-0 flex-1 h-14 rounded-2xl border border-line bg-paper px-4 text-[16px] font-semibold placeholder:text-black/35 focus:outline-none focus:border-ink focus:ring-2 focus:ring-ink/10 transition">
+            <button type="submit" class="h-14 px-5 rounded-2xl bg-ink text-white font-extrabold text-[15px] flex items-center gap-2 hover:bg-black active:scale-[.99] transition">
+              <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+              Enviar
+            </button>
+          </div>
+          <p id="emailMsg" class="mt-2 text-[13px] font-semibold min-h-[1.2em]" aria-live="polite"></p>
+        </form>
+      </div>
+
+      <div class="mt-6 grid grid-cols-2 gap-3 animate-rise" style="animation-delay:.55s">
+        <button id="btnRetry" type="button" class="h-14 rounded-2xl border-2 border-ink font-extrabold text-[15px] hover:bg-ink hover:text-white transition">Volver a jugar</button>
+        <button id="btnAll" type="button" class="h-14 rounded-2xl bg-black/[.06] font-extrabold text-[15px] hover:bg-black/10 transition">Ver perfiles</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── ALL PROFILES ─── -->
+  <section id="screen-profiles" class="screen flex-1 overflow-y-auto" hidden>
+    <div class="px-6 pt-2 pb-10">
+      <h2 class="font-display text-[44px] uppercase leading-none">Perfiles de regalo</h2>
+      <p class="mt-2 text-[15px] text-black/55">Seis maneras de acertar. ¿Cuál es la suya?</p>
+      <div id="profilesGrid" class="mt-6 grid grid-cols-2 gap-3 stagger"></div>
+      <button id="btnPlayFromProfiles" type="button" class="mt-8 w-full h-16 rounded-2xl bg-ink text-white font-extrabold text-[18px] hover:bg-black transition">Descubrir mi Gift Match</button>
+    </div>
+  </section>
+</div>
+
+<!-- ═════════ DESKTOP SIDE PANEL (totem / QR) ═════════ -->
+<aside class="hidden lg:flex flex-col w-[340px] bg-white rounded-[28px] p-9 shadow-[0_30px_60px_-30px_rgba(0,0,0,.35)]">
+  <svg viewBox="100 100 50 32" class="w-16 mb-6" role="img" aria-label="adidas"><path fill="#000" fill-rule="evenodd" d="M150.07 131.439L131.925 100l-9.719 5.606 14.906 25.833h12.958zm-17.289 0l-11.984-20.747-9.719 5.606 8.745 15.141h12.958zm-23.063-10.038l5.791 10.038h-12.958L100 127.007l9.718-5.606z"/></svg>
+  <h2 class="font-display font-extrabold uppercase text-[64px] leading-[.85]">The<br>Gift<br>Match</h2>
+  <p class="mt-6 text-[20px] leading-snug font-semibold">Descubre el regalo que mejor encaja con esa persona.</p>
+  <img src="qr app.svg" alt="Código QR para jugar desde el móvil" class="mt-8 w-full max-w-[220px] rounded-2xl">
+  <p class="mt-5 font-display text-[26px] uppercase leading-none tracking-wide">Escanea<br>y juega</p>
+</aside>
+
+<template id="tplCard">
+  <article class="relative rounded-[22px] bg-ink text-white aspect-[3/4] flex flex-col">
+    <div class="absolute inset-0 overflow-hidden rounded-[22px] grain">
+      <div data-bg class="absolute inset-0"></div>
+      <img data-photo alt="" class="absolute inset-0 w-full h-full object-cover object-[60%_30%]" onerror="this.remove()">
+      <svg data-glyph viewBox="0 0 24 24" class="absolute -right-6 top-1/4 w-3/4 text-white/[.09]" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"></svg>
+      <div class="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/85"></div>
+    </div>
+    <h3 data-title class="relative font-display font-extrabold uppercase leading-[.86] tracking-tight"></h3>
+    <div class="relative mt-auto">
+      <p data-tagline class="leading-snug font-semibold text-white/90"></p>
+      <div data-tags class="flex flex-wrap gap-2"></div>
+    </div>
+  </article>
+</template>
+
+<script>
+(() => {
+  /* ───────── Icons (24×24 stroke) ───────── */
+  const I = {
+    me:     '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5z"/>',
+    gift:   '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v9H5v-9M7.5 8a2.5 2.5 0 010-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 010 5"/>',
+    family: '<circle cx="9" cy="7" r="3"/><circle cx="17.5" cy="9" r="2.5"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6M15.5 14.3c3 0 5.5 2 5.5 5.2"/>',
+    other:  '<path d="M12 3l7 9-7 9-7-9z"/>',
+    run:    '<circle cx="15.5" cy="4.5" r="2"/><path d="M5 12l3.5-3.5 4.5.5 2.5 4 3.5 1M10.5 10L8 15l4 2.5-1.5 4.5M8 15l-4 1"/>',
+    gym:    '<path d="M6.5 6.5v11M3.5 9v6M17.5 6.5v11M20.5 9v6M6.5 12h11"/>',
+    ball:   '<circle cx="12" cy="12" r="9"/><path d="M12 7.5l3.8 2.8-1.4 4.4H9.6l-1.4-4.4zM12 3v4.5M15.8 10.3l4.6-1.4M14.4 14.7l2.8 4M9.6 14.7l-2.8 4M8.2 10.3L3.6 8.9"/>',
+    shirt:  '<path d="M8 3L3 6l2 4.5 3-1.2V21h8V9.3l3 1.2L21 6l-5-3c0 2-1.8 3.2-4 3.2S8 5 8 3z"/>',
+    sneaker:'<path d="M2 16.5V12l2.5-4.5H8l1 1.5 2.5-1 3 3.5 4 1c2 .5 3.5 1.7 3.5 3.5v.5zM2 16.5V19h20v-2.5M10 11l1.2-.6M12 13l1.2-.6M14 14.6l1.2-.6"/>',
+    city:   '<path d="M3 21V10l6-3v14M9 21V3l9 4v14M2 21h20M12.5 9h2M12.5 13h2M12.5 17h2"/>',
+    sofa:   '<path d="M4 11V8a3 3 0 013-3h10a3 3 0 013 3v3M2 13a2 2 0 014 0v2h12v-2a2 2 0 014 0v5H2zM5 18v2M19 18v2"/>',
+    sun:    '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    bag:    '<path d="M5 8h14l-1 13H6zM9 8V6a3 3 0 016 0v2"/>',
+    cap:    '<path d="M4 15a8 8 0 0116 0zM4 15h10c4 0 7 1 7.5 2.5M12 7V5.5"/>',
+    star:   '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
+    bolt:   '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+  };
+  const svg = (k, cls = 'w-7 h-7') =>
+    `<svg viewBox="0 0 24 24" class="${cls}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[k]}</svg>`;
+
+  /* ───────── Profiles ───────── */
+  const PROFILES = {
+    runner:   { title: ['The', 'Runner'],        icon: 'run',     tagline: 'Para quien siempre tiene un nuevo objetivo por delante.',               tags: ['Running · Performance', 'Accesorios'],   bg: 'radial-gradient(120% 80% at 80% 10%, #6b3b2a 0%, #241713 55%, #0c0c0c 100%)',
+                ideas: ['Zapatillas de running con amortiguación', 'Camiseta técnica transpirable', 'Gorra y calcetines de running'], shop: 'https://www.adidas.es/running' },
+    trainer:  { title: ['The', 'Trainer'],       icon: 'gym',     tagline: 'Si entrenar forma parte de su día a día.',                              tags: ['Training · Fitness', 'Funcional'],       photo: 'imgs/trainer.jpg', bg: 'radial-gradient(120% 80% at 20% 10%, #5a4a3a 0%, #1d1915 55%, #0c0c0c 100%)',
+                ideas: ['Mallas y top de entrenamiento', 'Zapatillas de training versátiles', 'Bolsa de deporte'], shop: 'https://www.adidas.es/training' },
+    sneaker:  { title: ['The', 'Sneaker Lover'], icon: 'sneaker', tagline: 'Hay regalos que se abren y otros que se estrenan.',                     tags: ['Sneakers · Lifestyle', 'Originals'],     bg: 'radial-gradient(120% 80% at 70% 20%, #7a6a55 0%, #2a241d 55%, #0c0c0c 100%)',
+                ideas: ['Un clásico Originals: Samba, Gazelle o Superstar', 'Edición especial o colaboración', 'Calcetines Originals a juego'], shop: 'https://www.adidas.es/originals' },
+    style:    { title: ['Style', 'Seeker'],      icon: 'shirt',   tagline: 'Su regalo ideal encaja con su estilo y su día a día.',                  tags: ['Lifestyle', 'Apparel · Streetwear'],     bg: 'radial-gradient(120% 80% at 30% 15%, #6e4f3c 0%, #261b15 55%, #0c0c0c 100%)',
+                ideas: ['Sudadera o chaqueta Adicolor', 'Pantalón de chándal de tres bandas', 'Mochila o bolso urbano'], shop: 'https://www.adidas.es/lifestyle' },
+    football: { title: ['The', 'Football Fan'],  icon: 'ball',    tagline: 'Si el fútbol forma parte de su vida, su regalo también debería hacerlo.', tags: ['Fútbol', 'Camisetas · Accesorios'],   bg: 'radial-gradient(120% 80% at 75% 15%, #3f4a3a 0%, #171c16 55%, #0c0c0c 100%)',
+                ideas: ['Camiseta oficial de su equipo', 'Balón oficial de competición', 'Botas de fútbol'], shop: 'https://www.adidas.es/futbol' },
+    easy:     { title: ['The', 'Easy Gift'],     icon: 'cap',     tagline: 'A veces el mejor regalo es el que sabes que va a usar.',                tags: ['Accesorios · Básicos', 'Regalos'],       bg: 'radial-gradient(120% 80% at 60% 10%, #8a6a4a 0%, #2c2118 55%, #0c0c0c 100%)',
+                ideas: ['Gorra o gorro de tres bandas', 'Botella o mochila adidas', 'Tarjeta regalo adidas'], shop: 'https://www.adidas.es/accesorios' },
+  };
+  const ORDER = ['runner', 'trainer', 'sneaker', 'style', 'football', 'easy'];
+
+  /* ───────── Questions ─────────
+     {le}/{su}/{lo} se adaptan si el regalo es «Para mí». */
+  const QUESTIONS = [
+    { q: '¿Para quién buscas regalo?', layout: 'list', key: 'who', options: [
+        { label: 'Para mí',       icon: 'me',     value: 'me' },
+        { label: 'Mi pareja',     icon: 'gift',   value: 'partner' },
+        { label: 'Un familiar',   icon: 'family', value: 'family' },
+        { label: 'Otra persona',  icon: 'other',  value: 'other' },
+    ]},
+    { q: '¿Qué {le} gusta más?', layout: 'grid', options: [
+        { label: 'Correr',       icon: 'run',   score: { runner: 3 } },
+        { label: 'Entrenar',     icon: 'gym',   score: { trainer: 3 } },
+        { label: 'El fútbol',    icon: 'ball',  score: { football: 3 } },
+        { label: 'La moda urbana', icon: 'shirt', score: { style: 2, sneaker: 2 } },
+    ]},
+    { q: '¿Cómo es {su} domingo ideal?', layout: 'grid', options: [
+        { label: 'Kilómetros al amanecer', icon: 'sun',   score: { runner: 2, trainer: 1 } },
+        { label: 'Partido con amigos',     icon: 'ball',  score: { football: 2, trainer: 1 } },
+        { label: 'Paseo por la ciudad',    icon: 'city',  score: { style: 2, sneaker: 1 } },
+        { label: 'Plan tranquilo',         icon: 'sofa',  score: { easy: 2, style: 1 } },
+    ]},
+    { q: '¿Qué {le} haría más ilusión?', layout: 'grid', options: [
+        { label: 'Zapatillas nuevas',        icon: 'sneaker', score: { sneaker: 3, runner: 1 } },
+        { label: 'Ropa con estilo',          icon: 'shirt',   score: { style: 2, trainer: 1 } },
+        { label: 'La equipación de {su} equipo', icon: 'ball', score: { football: 3 } },
+        { label: 'Algo práctico para el día a día', icon: 'bag', score: { easy: 3 } },
+    ]},
+    { q: '¿Cómo definirías {su} estilo?', layout: 'grid', options: [
+        { label: 'Técnico y deportivo', icon: 'bolt',    score: { runner: 1, trainer: 2 } },
+        { label: 'Clásico y retro',     icon: 'star',    score: { sneaker: 2, football: 1 } },
+        { label: 'Streetwear',          icon: 'city',    score: { style: 2, sneaker: 1 } },
+        { label: 'Sencillo y cómodo',   icon: 'cap',     score: { easy: 2 } },
+    ]},
+  ];
+
+  /* ───────── State ───────── */
+  let step = 0;
+  let answers = [];
+  let current = 'home';
+  let resultId = null;
+
+  const $ = (s) => document.querySelector(s);
+  const forMe = () => answers[0] === 0;
+  const t = (s) => s.replace(/\{le\}/g, forMe() ? 'te' : 'le').replace(/\{su\}/g, forMe() ? 'tu' : 'su');
+
+  function show(name) {
+    document.querySelectorAll('.screen').forEach((el) => (el.hidden = el.id !== 'screen-' + name));
+    current = name;
+    $('#btnBack').classList.toggle('invisible', name === 'home' || name === 'loading');
+    const scroller = $('#screen-' + name);
+    scroller.scrollTop = 0;
+    window.scrollTo({ top: 0 });
+  }
+
+  /* ───────── Quiz ───────── */
+  function renderProgress() {
+    $('#progress').innerHTML = QUESTIONS.map((_, i) =>
+      `<span class="h-1.5 rounded-full transition-colors duration-300 ${i <= step ? 'bg-ink' : 'bg-black/10'}"></span>`).join('');
+    $('#stepLabel').textContent = `${step + 1}/${QUESTIONS.length}`;
+  }
+
+  function renderQuestion() {
+    const Q = QUESTIONS[step];
+    renderProgress();
+    const picked = answers[step];
+    const opts = Q.options.map((o, i) => {
+      const sel = picked === i ? ' is-picked' : '';
+      if (Q.layout === 'list') {
+        return `<button type="button" data-i="${i}" class="opt${sel} w-full h-[76px] rounded-[20px] border border-line bg-white/60 flex items-center gap-6 px-7 text-left">
+            <span class="opt-icon text-ink">${svg(o.icon, 'w-9 h-9')}</span>
+            <span class="text-[21px] font-bold tracking-tight">${t(o.label)}</span>
+          </button>`;
+      }
+      return `<button type="button" data-i="${i}" class="opt${sel} aspect-square rounded-[22px] border border-line bg-white/60 flex flex-col items-start justify-between p-5 text-left">
+          <span class="opt-icon text-ink">${svg(o.icon, 'w-10 h-10')}</span>
+          <span class="text-[17px] leading-tight font-bold tracking-tight">${t(o.label)}</span>
+        </button>`;
+    }).join('');
+
+    $('#questionWrap').innerHTML = `
+      <h2 class="text-[30px] leading-[1.1] font-extrabold tracking-tight animate-rise">${t(Q.q)}</h2>
+      <div class="mt-7 ${Q.layout === 'list' ? 'space-y-3.5' : 'grid grid-cols-2 gap-3'} stagger">${opts}</div>`;
+
+    $('#questionWrap').querySelectorAll('.opt').forEach((b) =>
+      b.addEventListener('click', () => choose(+b.dataset.i, b)));
+  }
+
+  let locking = false;
+  function choose(i, btn) {
+    if (locking) return;
+    locking = true;
+    answers[step] = i;
+    answers.length = step + 1;
+    $('#questionWrap').querySelectorAll('.opt').forEach((b) => b.classList.toggle('is-picked', b === btn));
+    setTimeout(() => {
+      locking = false;
+      if (step < QUESTIONS.length - 1) { step++; renderQuestion(); }
+      else finish();
+    }, 280);
+  }
+
+  function computeResult() {
+    const score = Object.fromEntries(ORDER.map((k) => [k, 0]));
+    answers.forEach((a, qi) => {
+      const s = QUESTIONS[qi].options[a]?.score || {};
+      for (const k in s) score[k] += s[k];
+    });
+    // Desempate: gana el perfil que más puntúa en la pregunta «qué le gusta más».
+    const primary = QUESTIONS[1].options[answers[1]]?.score || {};
+    return ORDER.slice().sort((a, b) =>
+      (score[b] - score[a]) || ((primary[b] || 0) - (primary[a] || 0)) || ORDER.indexOf(a) - ORDER.indexOf(b))[0];
+  }
+
+  function finish() {
+    resultId = computeResult();
+    show('loading');
+    setTimeout(() => { renderResult(); show('result'); }, 1600);
+  }
+
+  /* ───────── Cards ───────── */
+  function buildCard(id, size = 'lg') {
+    const P = PROFILES[id];
+    const node = $('#tplCard').content.firstElementChild.cloneNode(true);
+    node.querySelector('[data-bg]').style.background = P.bg;
+    // Foto opcional por perfil: añade `photo: 'imgs/<id>.jpg'` en PROFILES.
+    const photo = node.querySelector('[data-photo]');
+    if (P.photo) { photo.src = P.photo; node.querySelector('[data-glyph]').remove(); }
+    else photo.remove();
+    const glyph = node.querySelector('[data-glyph]'); if (glyph) glyph.innerHTML = I[P.icon];
+    const title = node.querySelector('[data-title]');
+    title.innerHTML = P.title.join('<br>');
+    const tagline = node.querySelector('[data-tagline]');
+    tagline.textContent = P.tagline;
+    const tags = node.querySelector('[data-tags]');
+    tags.innerHTML = P.tags.map((x) =>
+      `<span class="bg-white text-ink rounded-lg font-extrabold uppercase tracking-wide ${size === 'lg' ? 'text-[11px] px-3 py-2' : 'text-[8.5px] px-2 py-1.5'}">${x}</span>`).join('');
+    if (size === 'lg') {
+      node.classList.add('p-6', 'animate-pop');
+      title.classList.add('text-[clamp(44px,15vw,64px)]');
+      tagline.classList.add('text-[19px]', 'max-w-[15ch]', 'mb-5');
+    } else {
+      node.classList.add('p-3.5');
+      title.classList.add('text-[clamp(20px,6.5vw,28px)]');
+      tagline.classList.add('text-[11.5px]', 'mb-2.5');
+    }
+    return node;
+  }
+
+  function renderResult() {
+    const P = PROFILES[resultId];
+    $('#resultEyebrow').textContent = forMe() ? 'Tu Gift Match es' : 'Su Gift Match es';
+    $('#resultCard').replaceChildren(buildCard(resultId, 'lg'));
+    $('#resultIdeas').innerHTML = P.ideas.map((x, i) =>
+      `<li class="flex items-center gap-4 py-3.5"><span class="font-display text-[22px] w-6 text-black/30">0${i + 1}</span><span class="text-[16px] font-semibold">${t(x)}</span></li>`).join('');
+    $('#resultShop').href = P.shop;
+
+    const name = P.title.join(' ').toUpperCase();
+    const url = location.href.split('#')[0];
+    const msg = `${forMe() ? 'Mi' : 'Su'} adidas GIFT MATCH es ${name} 🎁\n“${P.tagline}”\n\nIdeas: ${P.ideas.join(', ')}.\n\nDescubre el tuyo: ${url}`;
+    $('#btnWhatsapp').href = 'https://wa.me/?text=' + encodeURIComponent(msg);
+    $('#emailForm').dataset.subject = `Tu adidas GIFT MATCH: ${name}`;
+    $('#emailForm').dataset.body = msg;
+    $('#emailMsg').textContent = '';
+  }
+
+  function renderProfiles() {
+    const grid = $('#profilesGrid');
+    grid.replaceChildren(...ORDER.map((id) => buildCard(id, 'sm')));
+  }
+
+  /* ───────── Email ───────── */
+  $('#emailForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const input = $('#emailInput');
+    const msgEl = $('#emailMsg');
+    const v = input.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) {
+      msgEl.textContent = 'Introduce un email válido.';
+      msgEl.className = 'mt-2 text-[13px] font-semibold min-h-[1.2em] text-[#c73346]';
+      input.focus();
+      return;
+    }
+    const f = e.currentTarget;
+    // Sin backend: abre el cliente de correo. Sustituir por una llamada a API para envío real.
+    location.href = `mailto:${encodeURIComponent(v)}?subject=${encodeURIComponent(f.dataset.subject)}&body=${encodeURIComponent(f.dataset.body)}`;
+    msgEl.textContent = '¡Listo! Revisa tu app de correo para enviarlo.';
+    msgEl.className = 'mt-2 text-[13px] font-semibold min-h-[1.2em] text-[#1a7f45]';
+  });
+
+  /* ───────── Navigation ───────── */
+  function start() { step = 0; answers = []; renderQuestion(); show('quiz'); }
+  let profilesFrom = 'home';
+
+  $('#btnStart').addEventListener('click', start);
+  $('#btnRetry').addEventListener('click', start);
+  $('#btnPlayFromProfiles').addEventListener('click', start);
+  $('#btnHome').addEventListener('click', () => show('home'));
+  $('#btnProfiles').addEventListener('click', () => { profilesFrom = 'home'; renderProfiles(); show('profiles'); });
+  $('#btnAll').addEventListener('click', () => { profilesFrom = 'result'; renderProfiles(); show('profiles'); });
+  $('#btnBack').addEventListener('click', () => {
+    if (current === 'quiz') { if (step > 0) { step--; renderQuestion(); } else show('home'); }
+    else if (current === 'result') { step = QUESTIONS.length - 1; renderQuestion(); show('quiz'); }
+    else if (current === 'profiles') show(profilesFrom);
+  });
+})();
+</script>
+</body>
+</html>
