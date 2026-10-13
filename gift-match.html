@@ -139,12 +139,49 @@
       <p id="resultEyebrow" class="text-[13px] font-bold uppercase tracking-[.18em] text-black/45 animate-rise">Su Gift Match es</p>
       <div id="resultCard" class="mt-4"></div>
 
+      <!-- Regalo directo + cupón (solo tras completar el juego) -->
+      <div id="prizeBox" class="relative mt-6 rounded-3xl bg-ink text-white p-5 overflow-hidden grain animate-rise" style="animation-delay:.25s">
+        <div id="prizeIntro" class="relative">
+          <p class="text-[12px] font-bold uppercase tracking-[.18em] text-white/50">Exclusivo en tienda</p>
+          <h3 class="mt-2 font-display font-extrabold uppercase text-[34px] leading-[.95]">Tienes un regalo<br>esperándote</h3>
+          <p class="mt-2 text-[14px] text-white/65">Descubre qué te llevas hoy y canjéalo en caja con tu cupón.</p>
+          <button id="btnPrize" type="button" class="mt-5 w-full min-h-16 py-3 px-4 rounded-2xl bg-white text-ink font-extrabold text-[16px] leading-tight flex items-center justify-center gap-3 hover:bg-paper active:scale-[.99] transition">
+            <svg viewBox="0 0 24 24" class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v9H5v-9M7.5 8a2.5 2.5 0 010-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 010 5"/></svg>
+            Regalo directo, ¡recógelo en tienda!
+          </button>
+        </div>
+
+        <div id="prizeReveal" class="relative" hidden>
+          <p class="text-[12px] font-bold uppercase tracking-[.18em] text-white/50">Tu regalo directo</p>
+          <div class="mt-3 flex items-center gap-4">
+            <div class="w-24 h-24 shrink-0 rounded-2xl bg-white overflow-hidden"><img id="prizeImg" alt="" class="w-full h-full object-contain"></div>
+            <div class="min-w-0">
+              <p id="prizeName" class="font-display font-extrabold uppercase text-[32px] leading-[.92]"></p>
+              <p class="mt-1.5 text-[13px] text-white/60">Gratis · recógelo en tienda</p>
+            </div>
+          </div>
+          <div id="prizeExtra" class="mt-4 rounded-2xl bg-white/[.07] ring-1 ring-white/15 p-3 hidden items-center gap-3">
+            <div class="w-16 h-16 shrink-0 rounded-xl bg-white overflow-hidden"><img id="prizeExtraImg" alt="" class="w-full h-full object-contain"></div>
+            <div class="min-w-0">
+              <p class="text-[11px] font-extrabold uppercase tracking-[.16em] text-warm">¡Doble premio!</p>
+              <p id="prizeExtraName" class="mt-0.5 text-[15px] font-bold leading-snug"></p>
+            </div>
+          </div>
+          <div class="mt-4 flex items-center justify-between gap-3 rounded-xl border border-dashed border-white/30 px-4 py-3">
+            <span class="text-[12px] font-bold uppercase tracking-[.14em] text-white/55">Código</span>
+            <span id="prizeCode" class="font-display text-[26px] tracking-[.12em] tabular-nums"></span>
+          </div>
+          <button id="btnCoupon" type="button" class="mt-4 w-full h-14 rounded-2xl bg-white text-ink font-extrabold text-[16px] flex items-center justify-center gap-2 hover:bg-paper active:scale-[.99] transition disabled:opacity-40">
+            <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 19h16"/></svg>
+            Descargar cupón
+          </button>
+          <p class="mt-2.5 text-center text-[12px] text-white/50">Muéstralo en caja para canjear tu regalo.</p>
+        </div>
+      </div>
+
       <div class="mt-7 animate-rise" style="animation-delay:.35s">
         <h3 class="text-[13px] font-bold uppercase tracking-[.18em] text-black/45">Ideas de regalo</h3>
         <ul id="resultIdeas" class="mt-3 divide-y divide-line border-y border-line"></ul>
-        <a id="resultShop" href="#" target="_blank" rel="noopener" class="mt-4 inline-flex items-center gap-2 text-[15px] font-extrabold underline underline-offset-4 decoration-2">Ver selección en adidas.es
-          <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
-        </a>
       </div>
 
       <!-- Share -->
@@ -372,6 +409,7 @@
   function finish() {
     matchId = computeResult();
     show('loading');
+    resetPrize();
     setTimeout(() => { renderResult(matchId, 'match'); show('result'); }, 1600);
   }
 
@@ -434,10 +472,10 @@
     $('#btnBackProfiles').classList.toggle('inline-flex', isProfile);
     $('#resultEyebrow').textContent = isProfile ? 'Perfil de regalo' : forMe() ? 'Tu Gift Match es' : 'Su Gift Match es';
     $('#btnRetry').textContent = isProfile ? 'Jugar' : 'Volver a jugar';
+    $('#prizeBox').hidden = isProfile;
     $('#resultCard').replaceChildren(buildCard(id, 'lg'));
     $('#resultIdeas').innerHTML = P.ideas.map((x, i) =>
       `<li class="flex items-center gap-4 py-3.5"><span class="font-display text-[22px] w-6 text-black/30">0${i + 1}</span><span class="text-[16px] font-semibold">${t(x)}</span></li>`).join('');
-    $('#resultShop').href = P.shop;
 
     const name = P.title.join(' ').toUpperCase();
     const url = location.href.split('#')[0];
@@ -480,6 +518,208 @@
     const card = lastProfile && document.querySelector(`#profilesGrid [data-id="${lastProfile}"]`);
     if (card) { card.scrollIntoView({ block: 'center' }); card.focus({ preventScroll: true }); }
   }
+
+  /* ───────── Regalo directo + cupón ───────── */
+  const PRIZES = {
+    stickers: { name: 'Pack de stickers',  img: 'imgs/stickers.webp' },
+    lanyard:  { name: 'Lanyard adidas',    img: 'imgs/lanyard.webp' },
+    bruma:    { name: 'Bruma corporal',    img: 'imgs/bruma.webp' },
+    gel:      { name: 'Gel de ducha',      img: 'imgs/gel.webp' },
+  };
+  // Premios vinculados a compra mínima (doble premio).
+  const BONUS = [
+    { name: 'Balón de fútbol', cond: 'por compras superiores a 110 € en outlets',     img: 'imgs/balon.webp' },
+    { name: 'Balón de fútbol', cond: 'por compras superiores a 150 € en franquicias', img: 'imgs/balon.webp' },
+    { name: 'Fragancia',       cond: 'por compras superiores a 70 € en outlets',      img: 'imgs/fragancia.webp' },
+    { name: 'Balón de fútbol', cond: 'por compras superiores a 120 € en franquicias', img: 'imgs/balon.webp' },
+  ];
+  const DOUBLE_CHANCE = 0.3; // «algunos cupones» incluyen doble premio
+  let coupon = null;
+
+  const rnd = (n) => crypto.getRandomValues(new Uint32Array(1))[0] % n;
+  const store = {
+    get: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
+    set: (k, v) => { try { localStorage.setItem(k, v); } catch {} },
+  };
+  function couponCode() {
+    const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const part = () => Array.from({ length: 4 }, () => A[rnd(A.length)]).join('');
+    return `GM-${part()}-${part()}`;
+  }
+
+  function resetPrize() {
+    coupon = null;
+    $('#prizeIntro').hidden = false;
+    $('#prizeReveal').hidden = true;
+    $('#btnPrize').disabled = false;
+  }
+
+  function drawPrize() {
+    if (coupon) return;
+    // Cada vez un regalo distinto al anterior.
+    const keys = Object.keys(PRIZES);
+    const last = store.get('gm_last_prize');
+    const pool = keys.filter((k) => k !== last);
+    const key = pool[rnd(pool.length)];
+    store.set('gm_last_prize', key);
+    coupon = {
+      prize: PRIZES[key],
+      bonus: Math.random() < DOUBLE_CHANCE ? BONUS[rnd(BONUS.length)] : null,
+      code: couponCode(),
+      profile: PROFILES[matchId].title.join(' ').toUpperCase(),
+      date: new Date(),
+    };
+
+    $('#btnPrize').disabled = true;
+    $('#prizeIntro').hidden = true;
+    $('#prizeReveal').hidden = false;
+    $('#prizeExtra').classList.replace('flex', 'hidden');
+    $('#btnCoupon').disabled = true;
+    $('#prizeCode').textContent = '····-····';
+
+    // Ruleta rápida antes de revelar el premio.
+    let i = 0;
+    const spin = setInterval(() => {
+      const k = keys[i++ % keys.length];
+      $('#prizeImg').src = PRIZES[k].img;
+      $('#prizeName').textContent = PRIZES[k].name;
+    }, 110);
+    setTimeout(() => {
+      clearInterval(spin);
+      $('#prizeImg').src = coupon.prize.img;
+      $('#prizeName').textContent = coupon.prize.name;
+      $('#prizeName').parentElement.parentElement.classList.add('animate-pop');
+      if (coupon.bonus) {
+        $('#prizeExtraImg').src = coupon.bonus.img;
+        $('#prizeExtraName').textContent = `${coupon.bonus.name} ${coupon.bonus.cond}`;
+        $('#prizeExtra').classList.replace('hidden', 'flex');
+        $('#prizeExtra').classList.add('animate-rise');
+      }
+      $('#prizeCode').textContent = coupon.code;
+      $('#btnCoupon').disabled = false;
+    }, 1500);
+  }
+
+  // Genera el cupón como imagen PNG para mostrar en caja.
+  const loadImg = (src) => new Promise((res) => {
+    const im = new Image();
+    im.onload = () => res(im);
+    im.onerror = () => res(null);
+    im.src = src;
+  });
+
+  function wrap(ctx, text, maxW) {
+    const words = text.split(' '); const lines = []; let line = '';
+    for (const w of words) {
+      const test = line ? line + ' ' + w : w;
+      if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = w; } else line = test;
+    }
+    if (line) lines.push(line);
+    return lines;
+  }
+
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+
+  function drawImageContain(ctx, im, x, y, w, h) {
+    const s = Math.min(w / im.width, h / im.height);
+    ctx.drawImage(im, x + (w - im.width * s) / 2, y + (h - im.height * s) / 2, im.width * s, im.height * s);
+  }
+
+  async function renderCoupon(withImages) {
+    const c = coupon;
+    const W = 1080, H = c.bonus ? 1720 : 1440, P = 90;
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const ctx = cv.getContext('2d');
+    const display = (sz) => `800 ${sz}px "Barlow Condensed", Impact, sans-serif`;
+    const sans = (w, sz) => `${w} ${sz}px Manrope, Helvetica, Arial, sans-serif`;
+
+    ctx.fillStyle = '#0c0c0c'; ctx.fillRect(0, 0, W, H);
+
+    // Logo
+    ctx.save(); ctx.translate(P, P); ctx.scale(2.6, 2.6); ctx.translate(-100, -100);
+    ctx.fillStyle = '#fff';
+    ctx.fill(new Path2D('M150.07 131.439L131.925 100l-9.719 5.606 14.906 25.833h12.958zm-17.289 0l-11.984-20.747-9.719 5.606 8.745 15.141h12.958zm-23.063-10.038l5.791 10.038h-12.958L100 127.007l9.718-5.606z'), 'evenodd');
+    ctx.restore();
+
+    ctx.fillStyle = '#fff'; ctx.textBaseline = 'alphabetic';
+    ctx.font = sans(700, 26); ctx.fillStyle = 'rgba(255,255,255,.55)';
+    ctx.fillText('CUPÓN REGALO  ·  ' + c.profile, P, 250);
+    let ts = 150; ctx.font = display(ts);
+    while (ctx.measureText('THE GIFT MATCH').width > W - 2 * P && ts > 60) ctx.font = display(--ts);
+    ctx.fillStyle = '#fff'; ctx.fillText('THE GIFT MATCH', P, 390);
+
+    // Premio directo
+    let y = 450;
+    roundRect(ctx, P, y, W - 2 * P, 400, 36); ctx.fillStyle = '#fff'; ctx.fill();
+    const prizeImg = withImages && await loadImg(c.prize.img);
+    if (prizeImg) drawImageContain(ctx, prizeImg, P + 30, y + 30, 340, 340);
+    ctx.fillStyle = '#0c0c0c';
+    ctx.font = sans(800, 26); ctx.fillText('TU REGALO DIRECTO', P + 410, y + 110);
+    ctx.font = display(84);
+    wrap(ctx, c.prize.name.toUpperCase(), W - 2 * P - 450).forEach((l, i) => ctx.fillText(l, P + 410, y + 200 + i * 80));
+    ctx.font = sans(600, 26); ctx.fillStyle = 'rgba(12,12,12,.6)';
+    ctx.fillText('Gratis · recógelo en tienda', P + 410, y + 350);
+    y += 400;
+
+    // Doble premio
+    if (c.bonus) {
+      y += 40;
+      roundRect(ctx, P, y, W - 2 * P, 240, 30); ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.lineWidth = 2; ctx.stroke();
+      roundRect(ctx, P + 25, y + 25, 190, 190, 22); ctx.fillStyle = '#fff'; ctx.fill();
+      const bonusImg = withImages && await loadImg(c.bonus.img);
+      if (bonusImg) drawImageContain(ctx, bonusImg, P + 35, y + 35, 170, 170);
+      ctx.fillStyle = '#c8a77a'; ctx.font = sans(800, 26); ctx.fillText('¡DOBLE PREMIO!', P + 250, y + 70);
+      ctx.fillStyle = '#fff'; ctx.font = sans(700, 34);
+      wrap(ctx, `${c.bonus.name} ${c.bonus.cond}`, W - 2 * P - 290).forEach((l, i) => ctx.fillText(l, P + 250, y + 125 + i * 44));
+      y += 240;
+    }
+
+    // Código
+    y += 50;
+    ctx.setLineDash([14, 12]); ctx.strokeStyle = 'rgba(255,255,255,.45)'; ctx.lineWidth = 3;
+    roundRect(ctx, P, y, W - 2 * P, 200, 26); ctx.stroke(); ctx.setLineDash([]);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.font = sans(700, 24);
+    ctx.fillText('CÓDIGO', W / 2, y + 62);
+    ctx.fillStyle = '#fff'; ctx.font = display(104);
+    ctx.fillText(c.code, W / 2, y + 160);
+    y += 200;
+
+    // Pie
+    ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.font = sans(600, 26);
+    const fecha = c.date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    ['Muestra este cupón en caja para canjear tu regalo.',
+     'Válido para un solo uso y hasta fin de existencias.',
+     c.bonus ? 'El doble premio requiere la compra mínima indicada.' : '',
+     'Generado el ' + fecha].filter(Boolean).forEach((l, i) => ctx.fillText(l, W / 2, y + 80 + i * 40));
+    ctx.textAlign = 'left';
+    return cv;
+  }
+
+  async function downloadCoupon() {
+    if (!coupon) return;
+    const btn = $('#btnCoupon'); btn.disabled = true;
+    try { await Promise.all([document.fonts.load('800 100px "Barlow Condensed"'), document.fonts.load('700 30px Manrope')]); } catch {}
+    let blob;
+    try { blob = await new Promise((res, rej) => (renderCoupon(true)).then((cv) => cv.toBlob((b) => b ? res(b) : rej(), 'image/png')).catch(rej)); }
+    catch { // si el navegador bloquea las imágenes (p. ej. abriendo el archivo en local), se genera sin fotos
+      blob = await new Promise((res) => renderCoupon(false).then((cv) => cv.toBlob(res, 'image/png')));
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `cupon-gift-match-${coupon.code}.png`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    btn.disabled = false;
+  }
+
+  $('#btnPrize').addEventListener('click', drawPrize);
+  $('#btnCoupon').addEventListener('click', downloadCoupon);
 
   /* ───────── Email ───────── */
   $('#emailForm').addEventListener('submit', (e) => {
